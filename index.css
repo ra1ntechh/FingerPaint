@@ -243,6 +243,10 @@
             box-shadow: 0 0 50px rgba(253, 251, 253, 0.966);
             animation: slideUp 0.5s;
         }
+        .tutorial-window img {
+            margin-left: 40%;
+        }
+
 
         @keyframes slideUp {
             from { transform: translateY(50px); opacity: 0; }
