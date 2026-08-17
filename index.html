@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icon.png">
+    <link rel="stylesheet" href="index.css">
+    <title>FingerPaint AI</title>
+</head>
+<body>
+
+    <div class="diamond-pattern" id="diamondPattern"></div>
+    <div class="timer-circle" id="timer_circle" style="display: none;">3</div>
+    
+    <div class="tutorial-overlay" id="tutorial_overlay">
+        <div class="tutorial-window">
+            <div class="tutorial-title">🎨 Как рисовать пальцем</div>
+            <div class="tutorial-steps">
+                <div class="tutorial-step">
+                    <div class="step-icon">👆</div>
+                    <div class="step-text">
+                        <strong>Рисование:</strong> Поднимите указательный палец и водите им в воздухе. Камера отслеживает движение пальца.
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">🧹</div>
+                    <div class="step-text">
+                        <strong>Ластик:</strong> Выберите инструмент "Ластик" в правой панели и используйте палец для стирания.
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">✋</div>
+                    <div class="step-text">
+                        <strong>Очистка жестом:</strong> Проведите открытой ладонью слева направо, чтобы очистить весь холст.
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">👊</div>
+                    <div class="step-text">
+                        <strong>Остановка:</strong> Сожмите кулак на 5 кадров, чтобы остановить рисование и зафиксировать инструмент.
+                    </div>
+                </div>
+                <div class="tutorial-step">
+                    <div class="step-icon">⏱️</div>
+                    <div class="step-text">
+                        <strong>Фиксация фигур:</strong> Удерживайте палец неподвижно 3 секунды при использовании линейки, циркуля или фигур.
+                    </div>
+                </div>
+            </div>
+            <button class="tutorial-btn" onclick="closeTutorial()"> Начать рисовать!</button>
+        </div>
+    </div>
+
+    <button class="help-btn" onclick="showTutorial()" title="Как рисовать?">❓</button>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <div class="title-container"><img src="logo.png" width="2em" height="1em" alt="FingerPaint"></div>
+        
+        <div class="main-layout">
+            <div class="left-panel">
+                <div class="panel-title">ИИ Генератор</div>
+                <button id="icon_btn" class="ai-btn"><img src="iconmaker.png" width="150px" alt="icon"></button>
+                <button id="emoji_btn" class="ai-btn"><img src="emoji.png" width="150px" alt="emoji"></button>
+                <button id="simplify_btn">Рамка</button>
+                <button id="outline_btn">Обвести</button>
+                <button id="save_icon_btn">Сохранить</button>
+                <div id="icon_status">Нарисуйте и нажмите кнопку</div>
+                
+                <div class="section-divider"></div>
+                <div class="panel-title">📷 Камера</div>
+                <div class="btn-row">
+                    <button id="photo_btn" class="btn-sm">📸</button>
+                    <button id="video_btn" class="btn-sm">🎥</button>
+                    <button id="save_btn" class="btn-sm">💾</button>
+                </div>
+                <div id="record_status"></div>
+                
+                <div class="section-divider"></div>
+                <div class="panel-title">⚙️ Управление</div>
+                <button id="undo_btn"><img src="back.png" width="150px" alt="back"></button>
+                <button id="clear_btn"><img src="cleaner.png" width="150px" alt="clean"></button>
+                <div id="measurement_display">--</div>
+            </div>
+            
+            <div class="canvas-area">
+                <video id="webcam" autoplay playsinline></video>
+                <canvas id="videoCanvas" width="1100" height="800"></canvas>
+                <canvas id="drawingCanvas" width="1100" height="800"></canvas>
+                <canvas id="debugCanvas" width="1100" height="800"></canvas>
+                <canvas id="rulerCanvas" width="1100" height="800"></canvas>
+                <canvas id="iconCanvas" width="1100" height="800"></canvas>
+            </div>
+            
+            <div class="right-panel">
+                <div class="panel-title-white">🎨 Инструменты</div>
+                <button id="tool_brush" class="active"><img src="painter.png" width="150px" alt="painter"></button>
+                <button id="tool_eraser"><img src="eraser.png" width="150px" alt="eraser"></button>
+                
+                <div class="section-divider"></div>
+                <div class="panel-title-white">📐 Черчение</div>
+                <button id="tool_ruler"><img src="line.png" width="150px" alt="line"></button>
+                <button id="tool_compass"><img src="circle.png" width="150px" alt="circle"></button>
+                <button id="tool_shapes"><img src="figures.png" width="150px" alt="figures"></button>
+                <button id="tool_text"><img src="text.png" width="150px" alt="text"></button>
+                
+                <div class="section-divider"></div>
+                <div class="panel-title-white">🔷 Фигура</div>
+                <select id="shape_select">
+                    <option value="circle">Круг</option>
+                    <option value="square">Квадрат</option>
+                    <option value="rectangle">Прямоугольник</option>
+                    <option value="triangle">Треугольник</option>
+                    <option value="star">Звезда</option>
+                    <option value="heart">Сердечко</option>
+                    <option value="trapezoid">Трапеция</option>
+                    <option value="diamond">Ромб</option>
+                    <option value="pentagon">Пятиугольник</option>
+                    <option value="hexagon">Шестиугольник</option>
+                </select>
+                
+                <div class="section-divider"></div>
+                <div class="panel-title-white">🔤 Текст</div>
+                <input type="text" id="text_input" value="Привет!" maxlength="100" placeholder="Текст...">
+                
+                <div class="section-divider"></div>
+                <div class="panel-title-white">🌈 Цвет</div>
+                <div class="color-palette" id="palette_container">
+                    <div class="color-badge selected" style="background: #00ffff;" data-color="#00ffff"></div>
+                    <div class="color-badge" style="background: #ff00ff;" data-color="#ff00ff"></div>
+                    <div class="color-badge" style="background: #ffff00;" data-color="#ffff00"></div>
+                    <div class="color-badge" style="background: #00ff00;" data-color="#00ff00"></div>
+                    <div class="color-badge" style="background: #ff0000;" data-color="#ff0000"></div>
+                    <div class="color-badge" style="background: #0000ff;" data-color="#0000ff"></div>
+                    <input type="color" id="color_picker" value="#00ffff">
+                </div>
+                
+                <div class="section-divider"></div>
+                <div class="panel-title-white">📏 Размер</div>
+                <div class="range-group">
+                    <span style="font-size:10px;">Кисть:</span>
+                    <input type="range" id="brush_size" min="2" max="40" value="8">
+                    <span id="size_val" style="font-size:10px;">8</span>
+                </div>
+                <div class="range-group">
+                    <span style="font-size:10px;">Линия:</span>
+                    <input type="range" id="line_width" min="1" max="20" value="3">
+                    <span id="line_val" style="font-size:10px;">3</span>
+                </div>
+                
+                <div class="section-divider"></div>
+                <div class="tool-info" id="tool_info">🖌️ Кисть</div>
+            </div>
+        </div>
+        
+        <div id="info">AI команда: <input type="text" id="ai_command" placeholder="красный круг" style="width: 300px; margin: 0 10px;"> <button id="ai_draw_btn" style="width: auto; display: inline;">🎨</button> <span id="ai_status" style="font-size: 11px;"></span></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
